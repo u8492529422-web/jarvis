@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/romainsil/Documents/Loisirs/Code/VS Code/**)",
+      "Bash(npx create-next-app@latest jarvis-app --typescript --tailwind --eslint --app --src-dir=no --import-alias=\"@/*\" --no-git)",
+      "Bash(cp -r \"/Users/romainsil/Documents/Loisirs/Code/VS Code/jarvis-app/.\" \"/Users/romainsil/Documents/Loisirs/Code/VS Code/Jarvis/\")",
+      "Bash(rm -rf \"/Users/romainsil/Documents/Loisirs/Code/VS Code/jarvis-app\")"
+    ]
+  }
+}
