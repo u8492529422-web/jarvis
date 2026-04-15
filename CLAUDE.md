@@ -33,7 +33,7 @@ App Next.js 14 (App Router), Tailwind CSS, Drizzle ORM + Turso (SQLite cloud), A
 - `habit_logs` — coches quotidiennes des 20 habitudes (habitKey, date, completed)
 - `checkins` — check-ins matinaux (date unique, score auto, missedText, goals JSON, jarvisResponse)
 - `chat_messages` — messages par session (sessionDate = YYYY-MM-DD)
-- `memory` — mémoire Jarvis (type: `medium` | `long`, content text)
+- `memory` — mémoire Jarvis (type: `medium` | `long`, content text) — une seule ligne par type (upsert sur le type)
 
 **Logique IA** (`lib/jarvis.ts`) :
 - `JARVIS_SYSTEM_PROMPT` — personnalité Jarvis (coach brutal David Goggins style, français uniquement)
@@ -41,6 +41,10 @@ App Next.js 14 (App Router), Tailwind CSS, Drizzle ORM + Turso (SQLite cloud), A
 - Le modèle utilisé est `claude-haiku-4-5-20251001` (coût ~1-3€/mois)
 
 **Habitudes** (`lib/habits.ts`) : 20 habitudes fixes (constante `HABITS`), modifiables directement dans ce fichier.
+
+**Utilitaires** (`lib/utils.ts`) : helpers de date — `todayStr()`, `yesterday()`, `nDaysAgo(n)`, `formatDateFR()`. Toutes les dates sont au format `YYYY-MM-DD`.
+
+**DB client** (`lib/db.ts`) : instance Drizzle connectée à Turso via `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN`.
 
 **Pages** :
 - `/` — Today : check-in matinal (si pas encore fait) + liste des 20 habitudes avec streaks
