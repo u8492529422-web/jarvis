@@ -1,21 +1,25 @@
+const TZ = "Europe/Paris";
+
+/** Retourne "YYYY-MM-DD" pour aujourd'hui en heure de Paris */
 export function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: TZ }).format(new Date());
 }
 
+/** Formatte un objet Date en "YYYY-MM-DD" selon le fuseau Paris */
 export function dateStr(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: TZ }).format(date);
 }
 
+/** Retourne "YYYY-MM-DD" pour hier en heure de Paris */
 export function yesterday(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return dateStr(d);
+  return nDaysAgo(1);
 }
 
+/** Retourne "YYYY-MM-DD" pour il y a n jours en heure de Paris */
 export function nDaysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return dateStr(d);
+  const [y, m, d] = todayStr().split("-").map(Number);
+  const date = new Date(y, m - 1, d - n);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 export function formatDateFR(dateStr: string): string {

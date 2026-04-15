@@ -17,3 +17,11 @@ body {
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Masquer la scrollbar sur tous les navigateurs */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / iOS */
+}
