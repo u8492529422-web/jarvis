@@ -10,9 +10,13 @@ export async function POST(req: NextRequest) {
       console.error("[auth] ACCESS_PIN non configuré");
       return NextResponse.json({ error: "ACCESS_PIN non configuré côté serveur" }, { status: 500 });
     }
-    const submitted = typeof pin === "string" ? pin.trim() : "";
-    console.log(`[auth] tentative: len=${submitted.length}, expected len=${expected.length}`);
-    if (submitted !== expected) {
+    const submitted = String(pin).trim();
+    const expectedStr = String(expected).trim();
+    
+    // Log ultra-précis avec des guillemets pour voir les caractères invisibles
+    console.log(`[auth] DEBUG - soumis: "${submitted}" | attendu: "${expectedStr}"`);
+    
+    if (submitted !== expectedStr) {
       return NextResponse.json({ error: "Code incorrect" }, { status: 401 });
     }
 
