@@ -4,7 +4,6 @@ import CheckinForm from "@/components/CheckinForm";
 import HabitList from "@/components/HabitList";
 import JarvisResponse from "@/components/JarvisResponse";
 import { formatDateFR, todayStr } from "@/lib/utils";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type CheckinData = {
@@ -44,25 +43,10 @@ export default function TodayPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-zinc-950/90 backdrop-blur border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-black tracking-tight">JARVIS</h1>
-          <p className="text-xs text-zinc-500">{formatDateFR(today)}</p>
-        </div>
-        <nav className="flex gap-3">
-          <Link href="/chat" className="text-zinc-400 hover:text-white text-sm font-medium transition-colors">
-            Chat
-          </Link>
-          <Link href="/history" className="text-zinc-400 hover:text-white text-sm font-medium transition-colors">
-            Historique
-          </Link>
-        </nav>
-      </div>
+      <div className="max-w-lg mx-auto px-4 pt-6 pb-4">
+        <h1 className="text-3xl font-black tracking-tight mb-1">JARVIS</h1>
+        <p className="text-sm text-zinc-500 capitalize mb-6">{formatDateFR(today)}</p>
 
-      {/* Content */}
-      <div className="max-w-lg mx-auto px-4 py-5">
-        {/* Check-in ou réponse Jarvis */}
         {checkinData === null ? (
           <div className="h-32 bg-zinc-800 rounded-2xl animate-pulse mb-6" />
         ) : !checkinData.exists && !jarvisResponse ? (
@@ -74,7 +58,6 @@ export default function TodayPage() {
           <JarvisResponse response={jarvisResponse.text} score={jarvisResponse.score} />
         ) : null}
 
-        {/* Habitudes */}
         <HabitList date={today} />
       </div>
     </div>

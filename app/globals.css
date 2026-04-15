@@ -11,17 +11,30 @@
   --font-sans: var(--font-geist-sans);
 }
 
+html, body {
+  font-size: 16px;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
 }
 
 /* Masquer la scrollbar sur tous les navigateurs */
 * {
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
 *::-webkit-scrollbar {
-  display: none; /* Chrome / Safari / iOS */
+  display: none;
 }
+
+/* iOS : empêcher l'auto-zoom sur focus input (requiert font-size >= 16px) */
+input, textarea, select {
+  font-size: 16px;
+}
+
+.safe-top    { padding-top:    env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

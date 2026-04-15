@@ -2,31 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { todayStr } from "@/lib/utils";
-
-type Message = {
-  role: "user" | "assistant";
-  content: string;
-};
+import ChatMessageList, { ChatMessage } from "@/components/ChatMessageList";
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [generatingMemory, setGeneratingMemory] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     fetch(`/api/chat?date=${todayStr()}`)
       .then((r) => r.json())
       .then((data: { role: string; content: string }[]) => {
-        setMessages(data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })));
+        setMessages(
+          data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content }))
+        );
       });
   }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const sendMessage = async () => {
     const text = input.trim();
@@ -102,59 +95,36 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      {/* Boutons mémoire */}
+    <div className="flex flex-col h-[calc(100vh-14rem)]">
       <div className="flex gap-2 mb-3">
         <button
           onClick={() => generateMemory("medium")}
           disabled={!!generatingMemory}
-          className="flex-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-zinc-300 text-xs font-semibold py-2 px-3 rounded-xl transition-all"
+          className="flex-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-zinc-300 text-sm font-semibold py-2.5 px-3 rounded-xl transition-all min-h-11"
         >
           {generatingMemory === "medium" ? "Génération..." : "📊 Bilan 7 jours"}
         </button>
         <button
           onClick={() => generateMemory("long")}
           disabled={!!generatingMemory}
-          className="flex-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-zinc-300 text-xs font-semibold py-2 px-3 rounded-xl transition-all"
+          className="flex-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-zinc-300 text-sm font-semibold py-2.5 px-3 rounded-xl transition-all min-h-11"
         >
           {generatingMemory === "long" ? "Génération..." : "🧠 Profil Romain"}
         </button>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 pb-2">
-        {messages.length === 0 && (
-          <div className="text-center text-zinc-600 text-sm mt-10">
-            <p className="text-3xl mb-3">🤖</p>
-            <p>Parle à Jarvis. Il n'attend pas.</p>
+      <ChatMessageList
+        messages={messages}
+        streaming={streaming}
+        detectTimer
+        emptyState={
+          <div className="text-center text-zinc-600 text-base mt-10">
+            <p className="text-4xl mb-3">🤖</p>
+            <p>Parle à Jarvis. Il n&apos;attend pas.</p>
           </div>
-        )}
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            {msg.role === "assistant" && (
-              <span className="text-orange-400 text-sm mr-2 self-end mb-1">🤖</span>
-            )}
-            <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-orange-500 text-white rounded-br-md"
-                  : "bg-zinc-800 text-zinc-100 rounded-bl-md"
-              }`}
-            >
-              {msg.content}
-              {msg.role === "assistant" && streaming && i === messages.length - 1 && (
-                <span className="inline-block w-1 h-4 bg-orange-400 animate-pulse ml-1 align-middle" />
-              )}
-            </div>
-          </div>
-        ))}
-        <div ref={bottomRef} />
-      </div>
+        }
+      />
 
-      {/* Input */}
       <div className="flex gap-2 pt-3 border-t border-zinc-800">
         <textarea
           ref={inputRef}
@@ -163,12 +133,12 @@ export default function ChatInterface() {
           onKeyDown={handleKeyDown}
           placeholder="Dis à Jarvis ce qui se passe..."
           rows={2}
-          className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 resize-none"
+          className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-white text-base placeholder:text-zinc-600 focus:outline-none focus:border-orange-500 resize-none"
         />
         <button
           onClick={sendMessage}
           disabled={streaming || !input.trim()}
-          className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 rounded-xl transition-all active:scale-95 self-end"
+          className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-5 rounded-xl transition-all active:scale-95 self-end text-xl min-h-11"
         >
           →
         </button>
