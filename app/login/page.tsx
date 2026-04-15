@@ -3,17 +3,23 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-const PIN_LENGTH = 6;
+const PIN_MAX = 8;
+const PIN_MIN = 4;
+const PIN_DOTS = 6; // nombre de pastilles visuelles
 
 function LoginInner() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/";
+  const nextPath = params.get("next") || "/";
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const submit = async (fullPin: string) => {
+    if (fullPin.length < PIN_MIN) {
+      setError(`Au moins ${PIN_MIN} chiffres`);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -27,7 +33,7 @@ function LoginInner() {
         setPin("");
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       } else {
-        router.replace(next);
+        router.replace(nextPath);
         router.refresh();
       }
     } finally {
@@ -38,9 +44,9 @@ function LoginInner() {
   const press = (d: string) => {
     if (loading) return;
     setError(null);
-    const next = (pin + d).slice(0, PIN_LENGTH);
+    const next = (pin + d).slice(0, PIN_MAX);
     setPin(next);
-    if (next.length === PIN_LENGTH) submit(next);
+    if (next.length === 6) submit(next);
   };
 
   const back = () => {
@@ -58,21 +64,18 @@ function LoginInner() {
         <p className="text-zinc-500 text-base">Entre ton code</p>
       </div>
 
-      <div className="flex gap-3 mb-8">
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+      <div className="flex gap-3 mb-6">
+        {Array.from({ length: PIN_DOTS }).map((_, i) => (
           <div
             key={i}
             className={`w-3 h-3 rounded-full transition-all ${
-              i < pin.length ? "bg-orange-500 scale-110" : "bg-zinc-700"
-            } ${error ? "bg-red-500" : ""}`}
+              error ? "bg-red-500" : i < pin.length ? "bg-orange-500 scale-110" : "bg-zinc-700"
+            }`}
           />
         ))}
       </div>
 
-      {error && (
-        <p className="text-red-400 text-sm font-medium mb-4 h-5">{error}</p>
-      )}
-      {!error && <div className="h-5 mb-4" />}
+      <p className="text-red-400 text-sm font-medium mb-4 h-5">{error ?? ""}</p>
 
       <div className="grid grid-cols-3 gap-4 w-full max-w-xs">
         {digits.map((d) => (
@@ -84,13 +87,6 @@ function LoginInner() {
             {d}
           </button>
         ))}
-        <div />
-        <button
-          onClick={() => press("0")}
-          className="h-16 rounded-full bg-zinc-800 text-2xl font-light text-white active:scale-95 active:bg-zinc-700 transition-all"
-        >
-          0
-        </button>
         <button
           onClick={back}
           disabled={!pin.length}
@@ -98,7 +94,24 @@ function LoginInner() {
         >
           ⌫
         </button>
+        <button
+          onClick={() => press("0")}
+          className="h-16 rounded-full bg-zinc-800 text-2xl font-light text-white active:scale-95 active:bg-zinc-700 transition-all"
+        >
+          0
+        </button>
+        <button
+          onClick={() => submit(pin)}
+          disabled={pin.length < PIN_MIN || loading}
+          className="h-16 rounded-full bg-orange-500 text-base font-bold text-white active:scale-95 active:bg-orange-600 disabled:opacity-30 transition-all"
+        >
+          {loading ? "…" : "OK"}
+        </button>
       </div>
+
+      <p className="text-xs text-zinc-600 mt-6">
+        {pin.length} / {PIN_MIN}–{PIN_MAX} chiffres
+      </p>
     </div>
   );
 }

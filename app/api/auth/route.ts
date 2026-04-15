@@ -4,12 +4,15 @@ import { signAuthToken, AUTH_COOKIE } from "@/lib/auth";
 export async function POST(req: NextRequest) {
   try {
     const { pin } = await req.json();
-    const expected = process.env.ACCESS_PIN;
+    const expected = process.env.ACCESS_PIN?.trim();
 
     if (!expected) {
-      return NextResponse.json({ error: "ACCESS_PIN non configuré" }, { status: 500 });
+      console.error("[auth] ACCESS_PIN non configuré");
+      return NextResponse.json({ error: "ACCESS_PIN non configuré côté serveur" }, { status: 500 });
     }
-    if (typeof pin !== "string" || pin !== expected) {
+    const submitted = typeof pin === "string" ? pin.trim() : "";
+    console.log(`[auth] tentative: len=${submitted.length}, expected len=${expected.length}`);
+    if (submitted !== expected) {
       return NextResponse.json({ error: "Code incorrect" }, { status: 401 });
     }
 
